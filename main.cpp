@@ -4,11 +4,13 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <vector>
 
 class Pixel
 {
     public:
-        Pixel(png::rgb_pixel p)
+        Pixel() {};
+        Pixel(png::basic_rgb_pixel<png::byte> p)
         {
             this->setRGB(p.red, p.green, p.blue);
         }
@@ -49,7 +51,7 @@ class Pixel
 class Image
 {
     public:
-        Image(std::string filename)
+        void load(std::string filename)
         {
             png::image<png::rgb_pixel> img;
 
@@ -66,11 +68,13 @@ class Image
             }
 
             this->m_height = img.get_height();
-            this->m_width = img.get_height();
+            this->m_width = img.get_width();
 
-            this->m_pixels = new Pixel[m_width][m_height];
+            this->m_pixels.resize(this->m_width);
+
             for(size_t i = 0; i < this->m_width; i++)
             {
+                this->m_pixels[i].resize(this->m_height);
                 for(size_t j = 0; j < this->m_height; j++)
                 {
                     this->m_pixels[i][j] = Pixel(img.get_pixel(i, j));
@@ -81,7 +85,7 @@ class Image
     private:
         size_t m_height;
         size_t m_width;
-        Pixel** m_pixels;
+        std::vector<std::vector<Pixel>> m_pixels;
 };
 
 enum IMG_FORMAT
@@ -119,7 +123,8 @@ int main(int argc, char* argv[])
         if(signatureCheck(buf) == IMG_FORMAT::PNG)
         {
             std::cout << "PNG" << std::endl;
-            Image img(argv[1]);
+            Image img;
+            img.load(argv[1]);
         }
     }
 

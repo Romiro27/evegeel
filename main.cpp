@@ -3,6 +3,86 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cstring>
+
+class Pixel
+{
+    public:
+        Pixel(png::rgb_pixel p)
+        {
+            this->setRGB(p.red, p.green, p.blue);
+        }
+
+        void setRGB(unsigned char r, unsigned char g, unsigned char b)
+        {
+            this->m_r = r;
+            this->m_g = g;
+            this->m_b = b;
+        }
+
+        unsigned char getRed()
+        {
+            return this->m_r;
+        }
+
+        unsigned char getGreen()
+        {
+            return this->m_g;
+        }
+        
+        unsigned char getBlue()
+        {
+            return this->m_b;
+        }
+
+       /* unsigned char* getRGB()
+        {
+            return unsigned char*{this->m_r, this->m_g, this->m_b};
+        }*/
+
+    private:
+        unsigned char m_r;
+        unsigned char m_g;
+        unsigned char m_b;
+};
+
+class Image
+{
+    public:
+        Image(std::string filename)
+        {
+            png::image<png::rgb_pixel> img;
+
+            try
+            {
+                img.read(filename); 
+            }
+            catch(const png::error& e)
+            {
+                if(std::string(e.what()) != std::string("Not a PNG file"))
+                {
+                    throw std::runtime_error(e.what());
+                }
+            }
+
+            this->m_height = img.get_height();
+            this->m_width = img.get_height();
+
+            this->m_pixels = new Pixel[m_width][m_height];
+            for(size_t i = 0; i < this->m_width; i++)
+            {
+                for(size_t j = 0; j < this->m_height; j++)
+                {
+                    this->m_pixels[i][j] = Pixel(img.get_pixel(i, j));
+                }
+            }
+        }
+
+    private:
+        size_t m_height;
+        size_t m_width;
+        Pixel** m_pixels;
+};
 
 enum IMG_FORMAT
 {
@@ -10,22 +90,6 @@ enum IMG_FORMAT
     PNG,
     JPEG
 };
-
-unsigned char* PNGtoArray(std::string filename)
-{
-    try
-    {
-        png::image<png::rgb_pixel> img(filename); 
-    }
-    catch(const png::error& e)
-    {
-        if(std::string(e.what()) != std::string("Not a PNG file"))
-        {
-            std::cerr << e.what();
-            return nullptr;
-        }
-    }
-}
 
 IMG_FORMAT signatureCheck(char* file)
 {
@@ -55,7 +119,7 @@ int main(int argc, char* argv[])
         if(signatureCheck(buf) == IMG_FORMAT::PNG)
         {
             std::cout << "PNG" << std::endl;
-            PNGtoArray(argv[1]);
+            Image img(argv[1]);
         }
     }
 

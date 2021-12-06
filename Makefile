@@ -1,6 +1,4 @@
  
 all:
-	g++ -g -std=c++17 main.cpp -lpng
+	g++ -g -std=c++17 main.cpp window.cpp OGLRender.cpp -lpng -lSDL2 -lGL -o a.out -g
 
-test:
-	g++ windowExample.cpp window.cpp OGLRender.cpp -std=c++17 -o a.out -lSDL2 -lGL

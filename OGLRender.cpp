@@ -1,37 +1,36 @@
+#include <iostream>
+
 #include "OGLRender.h"
 
 
 OGLRender::OGLRender () {
 
-	vertexShaderSource =
-		"#version 330 core"
-		"in vec3 ourColor;"
-		"in vec2 TexCoord;"
+    vertexShaderSource =
+		"#version 300 es\n"
+		"layout (location = 0) in vec2 position;\n"
+		"layout (location = 1) in vec2 texCoord;\n"
 
-		"out vec4 color;"
+		"out vec2 TexCoord;\n"
 
-		"uniform sampler2D ourTexture;"
-
-		"void main()"
-		"{"
-		"	color = texture(ourTexture, TexCoord);"
-		"}";
+		"void main()\n"
+		"{\n"
+			"gl_Position = vec4(position, 0.0f, 1.0f);\n"
+			"TexCoord = texCoord;\n"
+		"}\n";
 
 	fragmentShaderSource =
-		"#version 330 core"
-		"layout (location = 0) in vec3 position;"
-		"layout (location = 1) in vec3 color;"
-		"layout (location = 2) in vec2 texCoord;"
+		"#version 300 es\n"
+		"in vec2 TexCoord;\n"
 
-		"out vec3 ourColor;"
-		"out vec2 TexCoord;"
+		"out vec4 color;\n"
 
-		"void main()"
-		"{"
-			"gl_Position = vec4(position, 1.0f);"
-		    	"ourColor = color;"
-			"TexCoord = texCoord;"
-		"}";
+		"uniform sampler2D ourTexture;\n"
+
+		"void main()\n"
+		"{\n"
+		"	color = texture(ourTexture, TexCoord);\n"
+		"}\n";
+
 }
 
 void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
@@ -39,7 +38,16 @@ void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
 	vertexShader = glCreateShader ( GL_VERTEX_SHADER );
 
         glShaderSource ( vertexShader, 1, &vertexShaderSource, 0 );        glCompileShader ( vertexShader );
-
+        //*******************
+        GLint success;
+GLchar infoLog[512];
+glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+if(!success)
+{
+	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+        //*********************
 
         fragmentShader = glCreateShader ( GL_FRAGMENT_SHADER );
         glShaderSource ( fragmentShader, 1, &fragmentShaderSource, 0 );
@@ -50,6 +58,13 @@ void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
         glAttachShader ( shaderProgram, fragmentShader );                     glLinkProgram ( shaderProgram );                                                                                                    
         glDeleteShader ( vertexShader );
         glDeleteShader ( fragmentShader );
+
+        //*******************
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+if (!success) {
+	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+}
+        //*******************
 
 
 	imageWidth = width;
@@ -71,15 +86,23 @@ void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
     glGenTextures ( 1, &texture );
     glBindTexture ( GL_TEXTURE_2D, texture );
 
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+    glTexParameterf ( GL_TEXTURE_2D,  GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameterf ( GL_TEXTURE_2D,  GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
     glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB8, GL_UNSIGNED_BYTE, data );
+
+    glGenerateMipmap ( GL_TEXTURE_2D );
 
     glBindTexture ( GL_TEXTURE_2D, 0 );
 
 
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),
+    glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
                           (GLvoid*)0 ); //coordinates of vertex
 
-    glVertexAttribPointer ( 1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof ( GLfloat ),
+    glVertexAttribPointer ( 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof ( GLfloat ),
                            (GLvoid*)(3*sizeof(GLfloat)) ); //2d texture coordinates
 }
 
@@ -107,8 +130,8 @@ void OGLRender::drawImage () {
 	glDeleteShader ( fragmentShader );
 
 
-	int width = (1-1/imageWidth)*zoom + positionX;
-	int height = (1-1/imageHeight) * zoom + positionY;
+	int width = /*(1-1/imageWidth)*zoom + positionX*/ 1;
+	int height = /*(1-1/imageHeight) * zoom + positionY*/ 1;
 
 	imageCoordinates = {
 		Vertex ( width, height ), //верхний правый

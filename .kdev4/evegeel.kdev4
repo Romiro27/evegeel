@@ -1,27 +1,2 @@
-[Buildset]
-BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0e\x00e\x00v\x00e\x00g\x00e\x00e\x00l)
-
-[Launch]
-Launch Configurations=Launch Configuration 0
-
-[Launch][Launch Configuration 0]
-Configured Launch Modes=execute
-Configured Launchers=nativeAppLauncher
-Name=Новая конфигурация «Компилируемая программа»
-Type=Native Application
-
-[Launch][Launch Configuration 0][Data]
-Arguments=img.png
-Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
-Dependency Action=Nothing
-EnvironmentGroup=
-Executable=file:///home/alexey/projects/code/evegeel/a.out
-External Terminal=konsole --noclose --workdir %workdir -e %exe
-Kill Before Executing Again=4194304
-Project Target=
-Use External Terminal=false
-Working Directory=
-isExecutable=true
-
 [Project]
 VersionControlSupport=kdevgit

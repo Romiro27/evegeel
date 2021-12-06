@@ -80,6 +80,33 @@ class Image
                     this->m_pixels[i][j] = Pixel(img.get_pixel(i, j));
                 }
             }
+        
+        }
+
+        size_t getSize()
+        {
+            return this->m_height * this->m_width;
+        }
+
+        unsigned char* getBinary()
+        {
+            unsigned char* dest = new unsigned char[this->m_height * this->m_width];
+
+            for(size_t i = 0; i < this->m_width; i++)
+            {
+                for(size_t j = 0; j < this->m_height; j++)
+                {
+                    //buf[it] = this->m_pixels[i][j].getRed();
+                    //buf[it + 1] = this->m_pixels[i][j].getGreen();
+                    //buf[it + 2] = this->m_pixels[i][j].getBlue();
+                    //it += 3;
+                    dest[i * this->m_width + j] = this->m_pixels[i][j].getRed();
+                    dest[i * this->m_width + j] = this->m_pixels[i][j].getGreen();
+                    dest[i * this->m_width + j] = this->m_pixels[i][j].getBlue();
+                }
+            }
+
+            return dest;
         }
 
     private:
@@ -95,7 +122,7 @@ enum IMG_FORMAT
     JPEG
 };
 
-IMG_FORMAT signatureCheck(char* file)
+IMG_FORMAT signatureCheck(const char* file)
 {
     if(file[0] == (char)137 &&
        file[1] == (char)80 &&
@@ -125,7 +152,22 @@ int main(int argc, char* argv[])
             std::cout << "PNG" << std::endl;
             Image img;
             img.load(argv[1]);
+
+            size_t sz = img.getSize();
+            unsigned char* bimg = img.getBinary();
+
+            for(size_t i = 0; i < sz; i += 16)
+            {
+                for(char j = 0; j < 16; j++)
+                {
+                    std::cout << (int)bimg[i + j] << " ";
+                }
+                std::cout << std::endl;
+            }
+
+            delete[] bimg;
         }
+        delete[] buf;
     }
 
     return 0;

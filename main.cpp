@@ -92,17 +92,17 @@ class Image
         {
             unsigned char* dest = new unsigned char[this->m_height * this->m_width];
 
-            for(size_t i = 0; i < this->m_width; i++)
+            for(size_t i = 0; i < this->m_height; i++)
             {
-                for(size_t j = 0; j < this->m_height; j++)
+                for(size_t j = 0; j < this->m_width * 3; j += 3)
                 {
                     //buf[it] = this->m_pixels[i][j].getRed();
                     //buf[it + 1] = this->m_pixels[i][j].getGreen();
                     //buf[it + 2] = this->m_pixels[i][j].getBlue();
                     //it += 3;
-                    dest[i * this->m_width + j] = this->m_pixels[i][j].getRed();
-                    dest[i * this->m_width + j] = this->m_pixels[i][j].getGreen();
-                    dest[i * this->m_width + j] = this->m_pixels[i][j].getBlue();
+                    dest[i * this->m_height + j] = this->m_pixels[i][j].getRed();
+                    dest[i * this->m_height + j + 1] = this->m_pixels[i][j].getGreen();
+                    dest[i * this->m_height + j + 2] = this->m_pixels[i][j].getBlue();
                 }
             }
 

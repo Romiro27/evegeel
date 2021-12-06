@@ -15,6 +15,8 @@ struct Vertex {
 class OGLRender {
 public:
 
+    OGLRender ();
+
     void loadImage ( unsigned char* input, int width, int height );
     void drawImage ();
 
@@ -25,6 +27,18 @@ private:
 
     unsigned char* data;
     GLuint texture;
+    int imageWidth;
+    int imageHeight;
+
+    GLuint VBO;
+    GLuint VAO;
+
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint shaderProgram;
+
+    char* vertexShaderSource;
+    char* fragmentShaderSource
 
     std::vector <Vertex> imageCoordinates;
     std::vector <Vertex> textureCoordinates;

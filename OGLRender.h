@@ -38,7 +38,7 @@ private:
     GLuint shaderProgram;
 
     char* vertexShaderSource;
-    char* fragmentShaderSource
+    char* fragmentShaderSource;
 
     std::vector <Vertex> imageCoordinates;
     std::vector <Vertex> textureCoordinates;

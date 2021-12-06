@@ -38,11 +38,11 @@ void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
 
 	vertexShader = glCreateShader ( GL_VERTEX_SHADER );
 
-        glShaderSource ( vertexShader, 1, &vertexShaderSource, NULL );        glCompileShader ( vertexShader );
+        glShaderSource ( vertexShader, 1, &vertexShaderSource, 0 );        glCompileShader ( vertexShader );
 
 
         fragmentShader = glCreateShader ( GL_FRAGMENT_SHADER );
-        glShaderSource ( fragmentShader, 1, &fragmentShaderSource, NULL );
+        glShaderSource ( fragmentShader, 1, &fragmentShaderSource, 0 );
         glCompileShader ( fragmentShader );
                                                                       
         shaderProgram = glCreateProgram ();
@@ -87,12 +87,12 @@ void OGLRender::drawImage () {
     
 	vertexShader = glCreateShader ( GL_VERTEX_SHADER );
 
-	glShaderSource ( vertexShader, 1, &vertexShaderSource, NULL );
+	glShaderSource ( vertexShader, 1, &vertexShaderSource, 0 );
 	glCompileShader ( vertexShader );
 
 
 	fragmentShader = glCreateShader ( GL_FRAGMENT_SHADER );
-	glShaderSource ( fragmentShader, 1, &fragmentShaderSource, NULL );
+	glShaderSource ( fragmentShader, 1, &fragmentShaderSource, 0 );
 	glCompileShader ( fragmentShader );
 
 	
@@ -108,7 +108,7 @@ void OGLRender::drawImage () {
 
 
 	int width = (1-1/imageWidth)*zoom + positionX;
-	int height = (1-1/imageheight) * zoom + positionY;
+	int height = (1-1/imageHeight) * zoom + positionY;
 
 	imageCoordinates = {
 		Vertex ( width, height ), //верхний правый
@@ -145,7 +145,7 @@ void OGLRender::drawImage () {
 
 
 	glUseProgram ( shaderProgram );
-	glDrawArrays ( GL_TRINAGLES, 0, 3 );
+	glDrawArrays ( GL_TRIANGLES, 0, 3 );
 	glBindVertexArray ( 0 );
 }
 
@@ -160,3 +160,4 @@ void OGLRender::setZoom ( double zoom ) {
 
     this -> zoom = zoom;
 }
+

@@ -13,16 +13,31 @@ Window::Window ( std::string windowHeaderText, int posX, int posY, int width, in
 
 
     SDL_SetWindowOpacity( window, 0.1 );
-    SDL_SetWindowBordered ( window, SDL_FALSE );
+    //SDL_SetWindowBordered ( window, SDL_FALSE );
 
     glContext = SDL_GL_CreateContext ( window );
+}
 
-    //glClearColor ( 0, 0, 0, 1 );
+
+void Window::clearWindow () {
+
     glClear ( GL_COLOR_BUFFER_BIT );
+}
+
+void Window::swapBuffers () {
 
     SDL_GL_SwapWindow ( window );
+}
 
-    SDL_Delay ( 5000 );
+
+bool Window::isQuit () {
+
+    SDL_PollEvent ( &event );
+    return event.type == SDL_QUIT;
+}
+
+
+Window::~Window () {
 
     SDL_GL_DeleteContext ( glContext );
 }

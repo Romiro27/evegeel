@@ -3,78 +3,18 @@
 #include "OGLRender.h"
 
 
-OGLRender::OGLRender () {
-
-    vertexShaderSource =
-		"#version 300 es\n"
-		"layout (location = 0) in vec2 position;\n"
-		"layout (location = 1) in vec2 texCoord;\n"
-
-		"out vec2 TexCoord;\n"
-
-		"void main()\n"
-		"{\n"
-			"gl_Position = vec4(position, 0.0f, 1.0f);\n"
-			"TexCoord = texCoord;\n"
-		"}\n";
-
-	fragmentShaderSource =
-		"#version 300 es\n"
-		"in vec2 TexCoord;\n"
-
-		"out vec4 color;\n"
-
-		"uniform sampler2D ourTexture;\n"
-
-		"void main()\n"
-		"{\n"
-		"	color = texture(ourTexture, TexCoord);\n"
-		"}\n";
-
-}
-
 void OGLRender::loadImage ( unsigned char* input, int width, int height ) {
 
-	vertexShader = glCreateShader ( GL_VERTEX_SHADER );
-
-        glShaderSource ( vertexShader, 1, &vertexShaderSource, 0 );        glCompileShader ( vertexShader );
-        //*******************
-        GLint success;
-GLchar infoLog[512];
-glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-if(!success)
-{
-	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-}
-        //*********************
-
-        fragmentShader = glCreateShader ( GL_FRAGMENT_SHADER );
-        glShaderSource ( fragmentShader, 1, &fragmentShaderSource, 0 );
-        glCompileShader ( fragmentShader );
-                                                                      
-        shaderProgram = glCreateProgram ();
-                                                                              glAttachShader ( shaderProgram, vertexShader );
-        glAttachShader ( shaderProgram, fragmentShader );                     glLinkProgram ( shaderProgram );                                                                                                    
-        glDeleteShader ( vertexShader );
-        glDeleteShader ( fragmentShader );
-
-        //*******************
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-if (!success) {
-	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-}
-        //*******************
-
+    data = input;
 
 	imageWidth = width;
-	imageHeight = height;
+	imageHeight = height; /* 1-1/width */
 
     imageCoordinates = {
-        Vertex ( 1-1/width, 1-1/height ), //верхний правый
-        Vertex ( 1-1/width, -(1-1/height) ), //нижний правый
-        Vertex ( -(1-1/width), -(1-1/height) ), //нижний левый
-        Vertex ( -(1-1/width), 1-1/height ) //верхний левый
+        Vertex ( 1, 1 ), //верхний правый
+        Vertex ( 1, -1 ), //нижний правый
+        Vertex ( -1, -1 ), //нижний левый
+        Vertex ( -1, 1 ) //верхний левый
     };
     textureCoordinates = {
         Vertex ( 1, 1 ), //соответственно
@@ -103,32 +43,13 @@ if (!success) {
                           (GLvoid*)0 ); //coordinates of vertex
 
     glVertexAttribPointer ( 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof ( GLfloat ),
-                           (GLvoid*)(3*sizeof(GLfloat)) ); //2d texture coordinates
+                           (GLvoid*)(2*sizeof(GLfloat)) ); //2d texture coordinates
+
+    shader = new Shader ( "./shader" );
+
 }
 
 void OGLRender::drawImage () {
-    
-	vertexShader = glCreateShader ( GL_VERTEX_SHADER );
-
-	glShaderSource ( vertexShader, 1, &vertexShaderSource, 0 );
-	glCompileShader ( vertexShader );
-
-
-	fragmentShader = glCreateShader ( GL_FRAGMENT_SHADER );
-	glShaderSource ( fragmentShader, 1, &fragmentShaderSource, 0 );
-	glCompileShader ( fragmentShader );
-
-	
-	shaderProgram = glCreateProgram ();
-
-	glAttachShader ( shaderProgram, vertexShader );
-	glAttachShader ( shaderProgram, fragmentShader );
-	glLinkProgram ( shaderProgram );
-
-
-	glDeleteShader ( vertexShader );
-	glDeleteShader ( fragmentShader );
-
 
 	int width = /*(1-1/imageWidth)*zoom + positionX*/ 1;
 	int height = /*(1-1/imageHeight) * zoom + positionY*/ 1;
@@ -167,7 +88,8 @@ void OGLRender::drawImage () {
 	glEnableVertexAttribArray ( 0 );
 
 
-	glUseProgram ( shaderProgram );
+	shader -> Bind ();
+
 	glDrawArrays ( GL_TRIANGLES, 0, 3 );
 	glBindVertexArray ( 0 );
 }

@@ -4,6 +4,8 @@
 #include <GLES3/gl3.h>
 #include <vector>
 
+#include "shader.h"
+
 struct Vertex {
     Vertex ( float x, float y ) {
         this -> x = x;
@@ -14,8 +16,6 @@ struct Vertex {
 
 class OGLRender {
 public:
-
-    OGLRender ();
 
     void loadImage ( unsigned char* input, int width, int height );
     void drawImage ();
@@ -33,12 +33,7 @@ private:
     GLuint VBO;
     GLuint VAO;
 
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    GLuint shaderProgram;
-
-    char* vertexShaderSource;
-    char* fragmentShaderSource;
+    Shader* shader;
 
     std::vector <Vertex> imageCoordinates;
     std::vector <Vertex> textureCoordinates;

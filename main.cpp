@@ -6,6 +6,9 @@
 #include <cstring>
 #include <vector>
 
+#include "window.h"
+#include "OGLRender.h"
+
 class Pixel
 {
     public:
@@ -109,6 +112,16 @@ class Image
             return dest;
         }
 
+        size_t getWidth ()
+        {
+            return m_width;
+        }
+
+        size_t getHeight ()
+        {
+            return m_height;
+        }
+
     private:
         size_t m_height;
         size_t m_width;
@@ -141,6 +154,9 @@ IMG_FORMAT signatureCheck(const char* file)
 
 int main(int argc, char* argv[])
 {
+    unsigned char* bimg;
+    Image img;
+
     std::fstream fs(argv[1], std::fstream::in | std::fstream::binary);
     if(fs.good())
     {
@@ -150,11 +166,10 @@ int main(int argc, char* argv[])
         if(signatureCheck(buf) == IMG_FORMAT::PNG)
         {
             std::cout << "PNG" << std::endl;
-            Image img;
             img.load(argv[1]);
 
             size_t sz = img.getSize();
-            unsigned char* bimg = img.getBinary();
+            bimg = img.getBinary();
 
             for(size_t i = 0; i < sz; i += 16)
             {
@@ -165,10 +180,27 @@ int main(int argc, char* argv[])
                 std::cout << std::endl;
             }
 
-            delete[] bimg;
         }
         delete[] buf;
     }
+
+
+    Window window ( "evegeel", 0, 0, 800, 600 );
+    OGLRender render;
+
+    render.setPositionOfView ( 0, 0 );
+    render.setZoom ( 1 );
+    render.loadImage ( bimg, img.getWidth (), img.getHeight () );
+
+    while ( !window.isQuit () ) {
+
+        window.clearWindow ();
+
+        render.drawImage ();
+
+        window.swapBuffers ();
+    }
+
 
     return 0;
 }

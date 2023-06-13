@@ -62,30 +62,32 @@ void OGLRender::drawImage () {
 	};
 
 
-	GLfloat vertices [16];
+	GLfloat vertices [8];
+    GLfloat imageCoords[8];
 
-	int j = 0;
-
-	for ( int i = 0; i < 16; i += 4 ) {
+	for ( int i = 0, j = 0, k = 0; i < 8; i += 3, j++, k +=2 ) { //i - vertices; j - image/texture; k - imageCoords
 
 		vertices [i] = imageCoordinates [j].x;
 		vertices [i + 1] = imageCoordinates [j].y;
-		vertices [i + 2] = textureCoordinates [j].x;
-		vertices [i + 3] = textureCoordinates [j].y;
-
-		j++;
+        vertices [i + 2] = 0.0f;
+		imageCoords [k] = textureCoordinates [j].x;
+		imageCoords [k + 1] = textureCoordinates [j].y;
 	}
 
 	glBindTexture ( GL_TEXTURE_2D, texture );
 
+    GLuint VBOs[2];
+    glGenBuffers ( 2, VBOs );
 
-	glGenBuffers ( 1, &VBO );
-	glBindBuffer ( GL_ARRAY_BUFFER, VBO );
+	glBindBuffer ( GL_ARRAY_BUFFER, VBOs[0] );
 	glBufferData ( GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW );
 
-	glGenVertexArrays ( 1, &VAO );
+    glBindBuffer ( GL_ARRAY_BUFFER, VBOs[1] );
+    glBufferData ( GL_ARRAY_BUFFER, sizeof(imageCoords), imageCoords, GL_DYNAMIC_DRAW );
+
+	/*glGenVertexArrays ( 1, &VAO );
 	glBindVertexArray ( VAO );
-	glEnableVertexAttribArray ( 0 );
+	glEnableVertexAttribArray ( 0 );*/
 
 
 	shader -> Bind ();

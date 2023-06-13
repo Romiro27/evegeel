@@ -30,7 +30,6 @@ private:
     int imageWidth;
     int imageHeight;
 
-    GLuint VBO;
     GLuint VAO;
 
     Shader* shader;
